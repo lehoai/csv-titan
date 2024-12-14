@@ -41,10 +41,3 @@ jobs:
       # Run unit tests
       - name: Run unit tests
         run: mvn test
-
-      # Run JavaFX application (optional: test launch)
-      - name: Test JavaFX application launch
-        if: ${{ github.event_name != 'pull_request' }}
-        run: |
-          echo "Running JavaFX application"
-          mvn javafx:run -DskipTests

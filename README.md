@@ -2,7 +2,8 @@
 
 JavaFX CSV Utility is a powerful desktop application for managing CSV files with advanced features and high performance. This tool is designed for developers, data analysts, and anyone who works with large datasets, offering a clean and intuitive interface built with JavaFX.
 
-<img width="1200" alt="Screenshot 2024-12-14 at 6 52 58 PM" src="https://github.com/user-attachments/assets/f6ba37b4-152a-4246-8592-268563023958" />
+![Uploading Screenshot 2024-12-14 at 6.52.58 PM.png…]()
+
 
 ## Features
 

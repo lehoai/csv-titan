@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+
+<Tab xmlns="http://javafx.com/javafx"
+     xmlns:fx="http://javafx.com/fxml"
+     fx:id="tabView"
+     fx:controller="lehoai.csvtitan.ui.CsvTabController">
+    <!-- ToolBar -->
+    <VBox>
+        <ToolBar>
+            <TextField fx:id="delimiterField" promptText="Set Delimiter"/>
+            <ComboBox fx:id="encodingComboBox">
+            </ComboBox>
+            <TextField fx:id="bufferLinesField" promptText="Line number to load"/>
+            <CheckBox fx:id="cbStringQuotation" text="String with double quotation"/>
+            <Region prefWidth="20"/>
+            <Button text="Reload csv" fx:id="btnReload" />
+        </ToolBar>
+        <Region prefHeight="20" />
+        <TabPane>
+            <VBox.vgrow>
+                ALWAYS
+            </VBox.vgrow>
+            <Tab text="Data">
+                <TableView fx:id="tblData" />
+            </Tab>
+            <Tab text="Schema">
+                <TableView fx:id="tblSchema" />
+            </Tab>
+        </TabPane>
+    </VBox>
+</Tab>
+

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="lehoai.csvtitan.ui.MainController">
+    <!-- MenuStrip -->
+    <top>
+        <VBox>
+            <ToolBar>
+                <Button text="Open csv" onMouseClicked="#onOpenCsv" />
+                <Button text="Union csv files" onMouseClicked="#onOpenUnion" />
+                <Button text="Generate csv data" onMouseClicked="#onOpenCsv" />
+            </ToolBar>
+            <Region prefHeight="10" />
+        </VBox>
+    </top>
+
+    <!-- Main View -->
+    <center>
+        <TabPane fx:id="mainTabPane">
+            <!-- Add more tabs here -->
+        </TabPane>
+    </center>
+</BorderPane>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<GridPane xmlns:fx="http://javafx.com/fxml" fx:controller="lehoai.csvtitan.ui.CsvUnionController"
+          prefWidth="600"
+          prefHeight="280"
+          hgap="20" vgap="20" alignment="TOP_CENTER">
+    <padding>
+        <Insets top="10" right="10" bottom="10" left="10"/>
+    </padding>
+    <GridPane.margin>
+        <Insets top="10.0" right="10.0" bottom="10.0" left="10.0"/>
+    </GridPane.margin>
+    <!-- Label for instructions -->
+    <Label text="Please select 2 input CSV files with the same encoding." GridPane.columnSpan="3"/>
+
+    <!-- File 1 -->
+    <TextField prefWidth="420" fx:id="fileInput1" promptText="File 1 path" GridPane.rowIndex="1" GridPane.columnIndex="0"
+               editable="false"/>
+    <Button text="Select File 1" fx:id="fileInputBtn1" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+    <!-- File 2 -->
+    <TextField fx:id="fileInput2" promptText="File 2 path" GridPane.rowIndex="2" GridPane.columnIndex="0"
+               editable="false"/>
+    <Button text="Select File 2" fx:id="fileInputBtn2" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+    <!-- File 3 -->
+    <TextField fx:id="fileOutput" promptText="Output path" GridPane.rowIndex="3" GridPane.columnIndex="0"
+               editable="false"/>
+    <Button text="Output path" fx:id="fileOutputBtn" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+
+    <ComboBox fx:id="encodingComboBox" GridPane.columnSpan="2" GridPane.rowIndex="4" GridPane.columnIndex="0">
+    </ComboBox>
+
+    <!-- Spacer to push buttons to the bottom-right -->
+    <Pane GridPane.rowIndex="5" GridPane.columnIndex="0" GridPane.columnSpan="2" HBox.hgrow="ALWAYS"
+          VBox.vgrow="ALWAYS"/>
+
+    <!-- Buttons -->
+    <HBox spacing="10" alignment="BOTTOM_RIGHT" GridPane.rowIndex="5" GridPane.columnIndex="0" GridPane.columnSpan="2">
+        <Button text="Close" fx:id="closeButton" minWidth="80"/>
+        <Button text="Union" fx:id="unionButton" minWidth="80"/>
+    </HBox>
+</GridPane>

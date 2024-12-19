@@ -50,6 +50,10 @@ JavaFX CSV Utility is a powerful desktop application for managing CSV files with
    ```bash
    ./mvn javafx:run
    ```
+3. Package executable
+   ```
+   ./mvn javafx:jlink
+   ```
 
 ### Usage
 

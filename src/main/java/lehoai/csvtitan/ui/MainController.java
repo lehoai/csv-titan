@@ -50,14 +50,6 @@ public class MainController implements CsvUnionController.UnionSuccessListener {
     }
 
     /**
-     * Initializes the controller and configures the menu bar to use the system menu bar
-     * if supported.
-     */
-    @FXML
-    public void initialize() {
-    }
-
-    /**
      * Show form union
      */
     @FXML
@@ -101,12 +93,13 @@ public class MainController implements CsvUnionController.UnionSuccessListener {
      *
      * @param path csv file path
      */
-    private void openCsvFile(String path) {
+    public void openCsvFile(String path) {
         try {
             FXMLLoader childViewLoader = new FXMLLoader(CsvTitanApplication.class.getResource("view/csv-tab-view.fxml"));
             childViewLoader.setControllerFactory(_ -> {
                 CsvTabController controller = new CsvTabController();
                 controller.setFilePath(path);
+                controller.setMainController(MainController.this);
                 return controller;
             });
             mainTabPane.getTabs().add(childViewLoader.load());

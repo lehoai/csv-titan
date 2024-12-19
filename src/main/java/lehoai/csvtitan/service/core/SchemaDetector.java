@@ -4,7 +4,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 /**
- * A utility class for detecting the data type of a given value in a CSV column.
+ * A utility class for detecting the data type of given value in a CSV column.
  * The detection is based on the value's format and content.
  */
 public class SchemaDetector {

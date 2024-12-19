@@ -3,10 +3,18 @@ package lehoai.csvtitan.ui;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.Pane;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import lehoai.csvtitan.CsvTitanApplication;
 import lehoai.csvtitan.service.CsvReader;
+import lehoai.csvtitan.service.core.CsvConfig;
 import lehoai.csvtitan.service.core.Encoding;
 import lehoai.csvtitan.service.core.Schema;
+import org.apache.commons.csv.CSVRecord;
 
 import java.io.IOException;
 import java.util.List;
@@ -15,7 +23,7 @@ import java.util.List;
  * Controller for managing the CSV viewer tab in a tab panel.
  * Provides functionalities for configuring, reloading, and displaying CSV data and schema.
  */
-public class CsvTabController {
+public class CsvTabController implements CsvSortController.SortSuccessListener {
 
     /**
      * Button to reload the CSV file and update the view.
@@ -35,11 +43,14 @@ public class CsvTabController {
     @FXML
     public CheckBox cbStringQuotation;
 
+    @FXML
+    public Button btnSort;
+
     /**
      * TableView to display the data from the CSV file.
      */
     @FXML
-    private TableView<String[]> tblData;
+    private TableView<CSVRecord> tblData;
 
     /**
      * TableView to display the schema (column metadata) of the CSV file.
@@ -75,6 +86,8 @@ public class CsvTabController {
      */
     private CsvReader csvReader;
 
+    private MainController mainController;
+
     /**
      * Initializes the controller and its associated components.
      * Sets default configurations, reads the CSV file, and displays its content.
@@ -86,16 +99,45 @@ public class CsvTabController {
         try {
             this.csvReader = new CsvReader(filePath, this.getConfig());
             tabView.setText(this.csvReader.getFileName());
+            this.csvReader.readMeta();
             this.loadData();
         } catch (IOException _) {
             // Handle initialization errors gracefully (ignored for now)
         }
+
+        btnSort.setOnAction(_ -> {
+            FXMLLoader loader = new FXMLLoader(CsvTitanApplication.class.getResource("screen/sort-view.fxml"));
+            try {
+                Pane root = loader.load();
+                CsvSortController controller = loader.getController();
+                controller.setSchemaList(tblSchema.getItems());
+                controller.setConfig(csvReader.getConfig());
+                controller.setFilePath(filePath);
+                controller.setSortSuccessListener(this);
+
+                Scene scene = new Scene(root);
+                Stage dialog = new Stage();
+                dialog.initModality(Modality.APPLICATION_MODAL);
+                dialog.initOwner(btnSort.getScene().getWindow());
+                dialog.setTitle("Sort CSV");
+                dialog.setScene(scene);
+                dialog.show();
+
+            } catch (IOException e) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText("An error occurred");
+                alert.setContentText("Can't open file\n" + e.getMessage());
+                alert.showAndWait();
+            }
+        });
 
         tabView.setOnClosed(_ -> this.csvReader.close());
         btnReload.setOnMouseClicked(_ -> {
             this.csvReader.close();
             try {
                 this.csvReader = new CsvReader(filePath, this.getConfig());
+                this.csvReader.readMeta();
                 this.loadData();
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -127,12 +169,12 @@ public class CsvTabController {
     private void initTableData() {
         tblData.getColumns().clear();
         Schema[] schemas = this.csvReader.getSchemas();
-        List<String[]> rawData = this.csvReader.readLines();
+        List<CSVRecord> rawData = this.csvReader.readLines();
         int i = 0;
         for (Schema schema : schemas) {
             final int colIndex = i;
-            TableColumn<String[], String> column = new TableColumn<>(schema.name);
-            column.setCellValueFactory(param -> new SimpleStringProperty(param.getValue()[colIndex]));
+            TableColumn<CSVRecord, String> column = new TableColumn<>(schema.name);
+            column.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().get(colIndex)));
             tblData.getColumns().add(column);
             tblData.setItems(FXCollections.observableArrayList(rawData));
             i++;
@@ -166,16 +208,24 @@ public class CsvTabController {
     /**
      * Constructs a configuration object based on the user inputs from the UI.
      *
-     * @return a {@link CsvReader.CsvReaderConfig} object with user-defined settings
+     * @return a {@link CsvConfig} object with user-defined settings
      */
-    private CsvReader.CsvReaderConfig getConfig() {
-        CsvReader.CsvReaderConfig config = new CsvReader.CsvReaderConfig();
+    private CsvConfig getConfig() {
+        CsvConfig config = new CsvConfig();
         config.delimiter = "".equals(delimiterField.getText()) ? "," : delimiterField.getText();
         config.encode = encodingComboBox.getSelectionModel().getSelectedItem();
         if (!"".equals(bufferLinesField.getText())) {
             config.bufferedLines = Integer.parseInt(bufferLinesField.getText());
         }
-        config.stringQuotation = cbStringQuotation.isSelected();
         return config;
+    }
+
+    @Override
+    public void onSortSuccess(String output) {
+        mainController.openCsvFile(output);
+    }
+
+    public void setMainController(MainController mainController) {
+        this.mainController = mainController;
     }
 }

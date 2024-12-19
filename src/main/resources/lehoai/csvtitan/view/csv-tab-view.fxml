@@ -18,6 +18,8 @@
             <CheckBox fx:id="cbStringQuotation" text="String with double quotation"/>
             <Region prefWidth="20"/>
             <Button text="Reload csv" fx:id="btnReload" />
+            <Region prefWidth="20"/>
+            <Button text="Sort" fx:id="btnSort" />
         </ToolBar>
         <Region prefHeight="20" />
         <TabPane>

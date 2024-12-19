@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<GridPane xmlns:fx="http://javafx.com/fxml" fx:controller="lehoai.csvtitan.ui.CsvSortController"
+          prefWidth="600"
+          prefHeight="230"
+          hgap="20" vgap="20" alignment="TOP_CENTER">
+    <padding>
+        <Insets top="10" right="10" bottom="10" left="10"/>
+    </padding>
+    <GridPane.margin>
+        <Insets top="10.0" right="10.0" bottom="10.0" left="10.0"/>
+    </GridPane.margin>
+    <Label text="Sort column :" GridPane.rowIndex="1" GridPane.columnIndex="0" />
+    <ComboBox fx:id="sortColumn" GridPane.columnSpan="2" GridPane.rowIndex="1" GridPane.columnIndex="1">
+    </ComboBox>
+    <Label text="Sort type :" GridPane.rowIndex="2" GridPane.columnIndex="0" />
+    <ComboBox fx:id="sortType" GridPane.columnSpan="2" GridPane.rowIndex="2" GridPane.columnIndex="1">
+    </ComboBox>
+    <Label text="Output file :" GridPane.rowIndex="3" GridPane.columnIndex="0" />
+    <TextField prefWidth="350" fx:id="fileOutput" promptText="Output path" GridPane.rowIndex="3" GridPane.columnIndex="1"
+               editable="false"/>
+    <Button text="Output path" fx:id="fileOutputBtn" GridPane.rowIndex="3" GridPane.columnIndex="2"/>
+
+    <!-- Buttons -->
+    <HBox spacing="10" alignment="BOTTOM_RIGHT" GridPane.rowIndex="4" GridPane.columnIndex="0" GridPane.columnSpan="3">
+        <Button text="Close" fx:id="closeButton" minWidth="80"/>
+        <Button text="Sort" fx:id="sortButton" minWidth="80"/>
+    </HBox>
+</GridPane>

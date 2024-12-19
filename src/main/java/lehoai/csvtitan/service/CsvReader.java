@@ -1,15 +1,19 @@
 package lehoai.csvtitan.service;
 
+import lehoai.csvtitan.service.core.CsvConfig;
 import lehoai.csvtitan.service.core.Schema;
 import lehoai.csvtitan.service.core.SchemaDetector;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 
-import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -18,72 +22,32 @@ import java.util.List;
  */
 public class CsvReader {
 
-    /**
-     * Configuration class for customizing CSV reading behavior.
-     * Includes settings for encoding, delimiter, quotation marks, and buffer size.
-     */
-    public static class CsvReaderConfig {
+    private static final char STRING_QUOTE = '"';
 
-        /**
-         * The character encoding of the CSV file. Default is "UTF-8".
-         */
-        public String encode;
-
-        /**
-         * The delimiter used to separate values in the CSV file. Default is a comma (",").
-         */
-        public String delimiter;
-
-        /**
-         * The character used for quoting string values in the CSV file. Default is null (no quoting).
-         */
-        public Boolean stringQuotation;
-
-        /**
-         * The number of lines to buffer when reading the CSV file. Default is 100.
-         */
-        public int bufferedLines;
-
-        /**
-         * Constructs a default configuration for CSV reading.
-         */
-        public CsvReaderConfig() {
-            this.stringQuotation = null;
-            this.delimiter = ",";
-            this.encode = "UTF-8";
-            this.bufferedLines = 100;
-        }
-    }
-
-    public final CsvReaderConfig config;
-    private final BufferedReader br;
-    private Schema[] schemas;
-    private String[] firstDataLine;
+    private final CSVParser csvParser;
+    private final CsvConfig config;
     private final String fileName;
-
-    /**
-     * Constructs a {@code CsvReader} with the given file path and the default configuration.
-     *
-     * @param filePath the path to the CSV file
-     * @throws IOException if an I/O error occurs while accessing the file
-     */
-    public CsvReader(String filePath) throws IOException {
-        this(filePath, new CsvReaderConfig());
-    }
+    private CSVRecord firstDataLine;
+    private Schema[] schemas;
 
     /**
      * Constructs a {@code CsvReader} with the given file path and configuration.
      *
-     * @param filePath the path to the CSV file
-     * @param config   the configuration for reading the CSV file
+     * @param config the configuration for reading the CSV file
      * @throws IOException if an I/O error occurs while accessing the file
      */
-    public CsvReader(String filePath, CsvReaderConfig config) throws IOException {
+    public CsvReader(String filePath, CsvConfig config) throws IOException {
         this.config = config;
-        br = new BufferedReader(new FileReader(filePath, Charset.forName(this.config.encode)));
+        csvParser = new CSVParser(new FileReader(filePath, Charset.forName(config.encode)),
+                CSVFormat.Builder.create()
+                        .setHeader()
+                        .setSkipHeaderRecord(true)
+                        .setDelimiter(config.delimiter)
+                        .setQuote(STRING_QUOTE)
+                        .build()
+        );
         Path path = Paths.get(filePath);
-        this.fileName = path.getFileName().toString();
-        readMeta();
+        fileName = path.getFileName().toString();
     }
 
     /**
@@ -92,21 +56,29 @@ public class CsvReader {
      * @return a list of string arrays, where each array represents a row of CSV values,
      * or {@code null} if an error occurs during reading
      */
-    public List<String[]> readLines() {
-        try {
-            List<String[]> result = new ArrayList<>(this.config.bufferedLines);
-            if (firstDataLine != null) {
-                result.add(firstDataLine);
-                firstDataLine = null;
-            }
-            String line;
-            while (result.size() < this.config.bufferedLines && (line = br.readLine()) != null) {
-                result.add(line.split(this.config.delimiter));
-            }
-            return result;
-        } catch (IOException e) {
-            return null;
+    public List<CSVRecord> readLines() {
+        List<CSVRecord> result = new ArrayList<>(this.config.bufferedLines);
+        if (firstDataLine != null) {
+            result.add(firstDataLine);
+            firstDataLine = null;
         }
+        while (result.size() < this.config.bufferedLines && csvParser.iterator().hasNext()) {
+            result.add(csvParser.iterator().next());
+        }
+        return result;
+    }
+
+    public CSVRecord readLine() {
+        if (firstDataLine != null) {
+            CSVRecord record = firstDataLine;
+            firstDataLine = null;
+            return record;
+        }
+        return csvParser.iterator().next();
+    }
+
+    public boolean hasNext() {
+        return csvParser.iterator().hasNext();
     }
 
     /**
@@ -114,7 +86,7 @@ public class CsvReader {
      */
     public void close() {
         try {
-            br.close();
+            csvParser.close();
         } catch (IOException _) {
             // Ignored to ensure cleanup without exceptions being propagated
         }
@@ -130,10 +102,18 @@ public class CsvReader {
     }
 
     /**
-     * Csv file name
+     * Return raw header as String
      *
-     * @return file name
+     * @return raw header
      */
+    public List<String> getRawHeader() {
+        return Arrays.stream(schemas).map(s -> s.name).toList();
+    }
+
+    public CsvConfig getConfig() {
+        return config;
+    }
+
     public String getFileName() {
         return fileName;
     }
@@ -141,20 +121,18 @@ public class CsvReader {
     /**
      * Reads the metadata from the CSV file, including column headers and the first line of data,
      * to infer the schema (column names and data types).
-     *
-     * @throws IOException if an I/O error occurs during reading
      */
-    private void readMeta() throws IOException {
-        String[] headers = br.readLine().split(this.config.delimiter);
-        schemas = new Schema[headers.length];
-        firstDataLine = br.readLine().split(this.config.delimiter);
+    public void readMeta() {
+        List<String> headers = csvParser.getHeaderNames();
+        schemas = new Schema[headers.size()];
+        firstDataLine = csvParser.iterator().next();
 
         SchemaDetector sd = new SchemaDetector();
 
         for (int i = 0; i < schemas.length; i++) {
             schemas[i] = new Schema();
-            schemas[i].name = headers[i];
-            schemas[i].type = sd.detectType(firstDataLine[i]);
+            schemas[i].name = headers.get(i);
+            schemas[i].type = sd.detectType(firstDataLine.get(i));
         }
     }
 }

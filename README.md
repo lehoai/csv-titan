@@ -2,7 +2,7 @@
 
 JavaFX CSV Utility is a powerful desktop application for managing CSV files with advanced features and high performance. This tool is designed for developers, data analysts, and anyone who works with large datasets, offering a clean and intuitive interface built with JavaFX.
 
-<img width="1200" alt="Screenshot 2024-12-14 at 6 52 58 PM" src="https://github.com/user-attachments/assets/f6ba37b4-152a-4246-8592-268563023958" />
+<img width="1200" alt="Screenshot 2024-12-14 at 6 52 58 PM" src="https://github.com/user-attachments/assets/1a003332-72b3-4b61-9f9c-5deb39053d3c" />
 
 ## Features
 
@@ -55,15 +55,15 @@ JavaFX CSV Utility is a powerful desktop application for managing CSV files with
 
 1. **Open a CSV File**: Select a file to preview its contents.
 2. **Union Two Files**: Choose two CSV files to merge them into a single dataset.
-3. **Sort by Column** (coming soon): Click on a column header to sort.
+3. **Sort by Column**: Sort large data csv file. 
 4. **Generate Data** (coming soon): Use the "Generate" tab to create synthetic data.
 
 ## Roadmap
 
 - [x] CSV Preview
 - [x] CSV Union
-- [ ] Column Sorting (ETA: 01/2025)
-- [ ] Data Generation (ETA: 05/2025)
+- [X] Column Sorting
+- [ ] Data Generation (ETA: 03/2025)
 
 ## Contributing
 

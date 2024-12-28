@@ -17,7 +17,7 @@ JavaFX CSV Utility is a powerful desktop application for managing CSV files with
 - Seamlessly merge two CSV files with exceptional performance.
 - Ensures compatibility between datasets by aligning columns intelligently.
 
-### 3. Column Sorting (In Progress)
+### 3. Column Sorting (Fully Implemented)
 
 - Sort data by any column.
 - Supports both ascending and descending order.
